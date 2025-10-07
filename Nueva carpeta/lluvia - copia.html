@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Lluvia de TE AMO</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      font-family: 'Segoe UI', sans-serif;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    .text-container {
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      background-color: transparent;
+      pointer-events: none;
+    }
+
+    .main-text {
+      font-size: 48px;
+      font-weight: bold;
+      color: #ff3366;
+      text-shadow: 0 0 20px rgba(255, 51, 102, 0.8), 0 0 40px rgba(255, 51, 102, 0.5);
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .sub-text {
+      font-size: 16px;
+      color: #ff99aa;
+      line-height: 1.5;
+      text-shadow: 0 0 10px rgba(255, 153, 170, 0.6);
+    }
+
+    .music-player {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      width: 90%;
+      max-width: 350px;
+      background: linear-gradient(135deg, rgba(255, 77, 109, 0.15), rgba(255, 26, 102, 0.15));
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 102, 153, 0.3);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 8px 32px rgba(255, 51, 102, 0.3);
+      pointer-events: all;
+    }
+
+    .player-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .album-art {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff4d6d, #ff1a66);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(255, 51, 102, 0.4);
+    }
+
+    .song-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .song-title {
+      color: #ff99aa;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 3px;
+      text-shadow: 0 0 8px rgba(255, 153, 170, 0.6);
+    }
+
+    .song-artist {
+      color: #ffccdd;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .player-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .control-btn {
+      background: linear-gradient(135deg, #ff4d6d, #ff1a66);
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+      transition: all 0.3s ease;
+      color: white;
+      font-size: 20px;
+    }
+
+    .control-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 8px rgba(255, 51, 102, 0.6);
+    }
+
+    .control-btn.small {
+      width: 35px;
+      height: 35px;
+      font-size: 16px;
+      opacity: 0.8;
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .volume-icon {
+      color: #ff99aa;
+      font-size: 18px;
+    }
+
+    .volume-slider {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 153, 170, 0.3);
+      border-radius: 5px;
+      outline: none;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4d6d, #ff1a66);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255, 51, 102, 0.5);
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4d6d, #ff1a66);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(255, 51, 102, 0.5);
+    }
+
+    .floating-text {
+      position: absolute;
+      color: #ff3366;
+      font-size: 20px;
+      font-weight: bold;
+      pointer-events: none;
+      animation: floatUp 2.5s ease-out forwards;
+      text-shadow: 0 0 6px white;
+      z-index: 20;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-120px) scale(1.5);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  
+  <div class="text-container">
+    <div class="main-text">❤️TE AMO❤️</div>
+    <div class="sub-text">
+      💞Gracias por dejarme escribir contigo la mejor historia de amor…
+
+      sigamos llenando sus páginas con más momentos inolvidables.💞
+    </div>
+  </div>
+
+  <div class="music-player">
+    <div class="player-header">
+      <div class="album-art">💕</div>
+      <div class="song-info">
+        <div class="song-title">Canción Romántica</div>
+        <div class="song-artist">Para ti, mi amor litzy</div>
+      </div>
+    </div>
+    <div class="player-controls">
+      <button class="control-btn small" id="prevBtn">⮜</button>
+      <button class="control-btn" id="playBtn">▶️</button>
+      <button class="control-btn small" id="nextBtn">⮞</button>
+    </div>
+    <div class="volume-control">
+      <span class="volume-icon">🔊</span>
+      <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
+    </div>
+  </div>
+
+  <audio id="audioPlayer" loop>
+    <source src="cancion.mp3" type="audio/mpeg">
+    Tu navegador no soporta el elemento de audio.
+  </audio>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const phrase = "TE AMO ";
+    const fontSize = 14;
+    const velocidadCaida = 0.08;
+    const espaciadoTeAmo = fontSize * 2.5;
+    let columns = Math.floor(width / espaciadoTeAmo);
+    let drops = [];
+    
+    for (let i = 0; i < columns; i++) {
+      if (Math.random() > 0.4) {
+        drops.push(Math.random() * -30);
+      } else {
+        drops.push(-999);
+      }
+    }
+
+    const numeros = ['🌼 Holi señorita Litzy la de corazón de oro 🌼 ', '🌞 ya me hiciste el día más bonito 🌞 ', '✨ tus mensajes son como un toque de magia que mejora cualquier día ✨ ', '💓 siempre tienes un gran corazón 💓 ', '🌈 gracias a ti mi día ya es genial 🌈 ', '🌷 me sale natural decirte cosas lindas porque tú eres increíble 🌷 ', '🌟 ya eres perfecta tal y como eres 🌟 ', '☀️ cómo amaneció la persona con el corazón más grande que conozco ☀️ ', '☺️ me haces sonrojar ☺️ ', '💎 voy a cuidar su corazón como el tesoro más valioso 💎 ', '🤲 voy a llenarlo de amor paciencia ternura y poquito a poquito voy a quitar cada duda cada miedo y cada tristeza 🤲 ', '🍒 yo la quiero capulinita 🍒 ', '❤️ te amo ❤️ ', '💘 te amo más de lo que las palabras pueden decir 💘 ', '😊 si supieras lo mucho que me llena saber que estuviste mejor 😊 ', '🍭 Ayyy mi chiquita si tú me abrazas me derrito como paleta al sol 🍭 ', '🫂 mi pecho es tu lugar favorito y mi corazón tu almohada 🫂 ', '⚖️ si la belleza fuera delito usted ya tendría cadena perpetua y yo me entregaba como cómplice ⚖️ ', '😇 usted no camina mi niña flota porque los ángeles no pisan el suelo 😇 ', '💞 me robas el corazón y hasta el alma 💞 ', '🔥 eres quien me hace sentir vivo incluso sin estar aquí 🔥 ', '⏰ eres la primera persona en la que pienso al despertar ⏰ ', '🤗 ven aquí amor mío déjame abrazarte fuerte y amarte con todo lo que soy 🤗 ', '🏠 mi último intento mi persona favorita el hogar de mis miedos mi más bonita casualidad 🏠 ', '💌 te amo simplemente te amo 💌 '];
+    
+    const espaciadoNumeros = fontSize * 3.5;
+    const columnasNumeros = Math.floor(width / espaciadoNumeros);
+    const dropsNumeros = [];
+    const numerosAsignados = [];
+    
+    for (let i = 0; i < columnasNumeros; i++) {
+      dropsNumeros.push(Math.random() * -50);
+      numerosAsignados.push(numeros[Math.floor(Math.random() * numeros.length)]);
+    }
+
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 1)";
+      ctx.fillRect(0, 0, width, height);
+
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, "#ff4d6d");
+      gradient.addColorStop(0.5, "#ff99aa");
+      gradient.addColorStop(1, "#ff1a66");
+
+      ctx.fillStyle = gradient;
+      ctx.font = fontSize + "px 'Segoe UI', Arial";
+
+      for (let i = 0; i < drops.length; i++) {
+        if (drops[i] > -100) {
+          ctx.fillText(phrase, i * espaciadoTeAmo, drops[i] * fontSize);
+        }
+
+        if (drops[i] * fontSize > height && Math.random() > 0.92) {
+          drops[i] = Math.random() * -50;
+        }
+
+        drops[i] += velocidadCaida;
+      }
+
+      const gradientNumeros = ctx.createLinearGradient(0, 0, width, height);
+      gradientNumeros.addColorStop(0, "#ff4d6d");
+      gradientNumeros.addColorStop(0.5, "#ff99aa");
+      gradientNumeros.addColorStop(1, "#ff1a66");
+
+      ctx.fillStyle = gradientNumeros;
+      ctx.font = (fontSize + 2) + "px 'Segoe UI', Arial";
+
+      for (let i = 0; i < dropsNumeros.length; i++) {
+        ctx.fillText(numerosAsignados[i], i * espaciadoNumeros, dropsNumeros[i] * fontSize);
+
+        if (dropsNumeros[i] * fontSize > height && Math.random() > 0.85) {
+          dropsNumeros[i] = 0;
+          numerosAsignados[i] = numeros[Math.floor(Math.random() * numeros.length)];
+        }
+
+        dropsNumeros[i] += velocidadCaida;
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    window.addEventListener('resize', () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      
+      columns = Math.floor(width / espaciadoTeAmo);
+      drops = [];
+      
+      for (let i = 0; i < columns; i++) {
+        if (Math.random() > 0.4) {
+          drops.push(Math.random() * -30);
+        } else {
+          drops.push(-999);
+        }
+      }
+      
+      const nuevasColumnasNumeros = Math.floor(width / espaciadoNumeros);
+      dropsNumeros.length = 0;
+      numerosAsignados.length = 0;
+      
+      for (let i = 0; i < nuevasColumnasNumeros; i++) {
+        dropsNumeros.push(Math.random() * -50);
+        numerosAsignados.push(numeros[Math.floor(Math.random() * numeros.length)]);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      for (let i = 0; i < 4; i++) {
+        const text = document.createElement('div');
+        text.className = 'floating-text';
+        text.innerText = 'TE AMO';
+        text.style.left = (e.clientX + (Math.random() * 60 - 30)) + 'px';
+        text.style.top = (e.clientY + (Math.random() * 60 - 30)) + 'px';
+        document.body.appendChild(text);
+
+        setTimeout(() => {
+          text.remove();
+        }, 2500);
+      }
+    });
+
+    // Audio Player
+    const audio = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    
+    audio.volume = 0.7;
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = '⏸️';
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶️';
+      }
+    });
+
+    volumeSlider.addEventListener('input', (e) => {
+      audio.volume = e.target.value / 100;
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      audio.currentTime = 0;
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      audio.currentTime = Math.max(0, audio.duration - 10);
+    });
+  </script>
+</body>
+</html>
